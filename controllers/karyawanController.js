@@ -3,6 +3,7 @@ const md5 = require("md5")
 const { request, response } = require("express")
 
 let modelKaryawan = require("../models/index").karyawan
+let jwt = require("jsonwebtoken")
 
 exports.getDataKaryawan = (request, response) => {
     modelKaryawan.findAll()
@@ -71,4 +72,35 @@ exports.deleteDataKaryawan = (request, response) => {
             message: error.message
         })
     })
+}
+
+exports.authentication = async(request, response) => {
+    let data = {
+        username: request.body.username,
+        password: md5(request.body.password)
+    }
+
+    //validasi (cek data di tabel karyawan)
+    let result = await modelKaryawan.findOne({where: data})
+
+    if (result) {
+        // data ditemukan
+
+        // payload = data/informasi yg akan dienkripsi
+        let payload = JSON.stringify(result) // koversi bentuk objek -> JSON
+        let secretKey = `Sequelize itu sangat menyenangkan`
+
+        // generate token
+        let token = jwt.sign(payload, secretKey)
+        return response.json({
+            logged: true,
+            token: token
+        })
+    } else{
+        // data tidak ditemukan
+        return response.json({
+            logged: false,
+            message: `Invalid username or password`
+        })
+    }
 }

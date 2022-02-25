@@ -9,5 +9,6 @@ app.get("/", karyawanController.getDataKaryawan)
 app.post("/", karyawanController.addDataKaryawan)
 app.put("/:id_karyawan", karyawanController.editDataKaryawan)
 app.delete("/:id_karyawan", karyawanController.deleteDataKaryawan)
+app.post("/auth", karyawanController.authentication)
 
 module.exports = app
