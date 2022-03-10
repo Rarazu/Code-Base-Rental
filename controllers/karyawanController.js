@@ -82,7 +82,6 @@ exports.authentication = async(request, response) => {
 
     //validasi (cek data di tabel karyawan)
     let result = await modelKaryawan.findOne({where: data})
-
     if (result) {
         // data ditemukan
 

@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+const mobil = require('./mobil');
 module.exports = (sequelize, DataTypes) => {
   class sewa extends Model {
     /**
@@ -11,6 +12,25 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      // relasi: sewa -> karyawan (child -> parent)
+      // parent: karyawan, child: sewa
+      // tipe: 1 sewa dicatat oleh 1 karyawan(one to one)
+      this.belongsTo(models.karyawan, {
+        foreignKey: "id_karyawan",
+        as: "karyawan"
+      })
+
+      this.belongsTo(models.pelanggan, {
+        foreignKey: "id_pelanggan",
+        as: "pelanggan"
+      })
+
+      // 1 sewa hanya bisa menyewa 1 mobil
+      this.belongsTo(models.mobil, {
+        foreignKey: "id_mobil",
+        as: "mobil"
+      })
+
     }
   }
   sewa.init({

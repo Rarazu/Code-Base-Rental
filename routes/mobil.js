@@ -9,7 +9,7 @@ app.get("/", mobilController.getDataMobil)
 
 app.post("/", uploadImg.upload.single(`image`), mobilController.addDataMobil)
 
-app.put("/:id_mobil", mobilController.editDataMobil)
+app.put("/:id_mobil", uploadImg.upload.single(`image`), mobilController.editDataMobil)
 
 app.delete("/:id_mobil", mobilController.deleteDataMobil)
 

@@ -1,6 +1,7 @@
 let modelMobil = require("../models/index").mobil
 let path = require("path")
 let fs = require("fs")
+const { error } = require("console")
 
 exports.getDataMobil = (request, response) => {
     modelMobil.findAll()
@@ -27,23 +28,23 @@ exports.addDataMobil = (request, response) => {
         warna: request.body.warna,
         tahun_pembuatan: request.body.tahun_pembuatan,
         biaya_sewa: request.body.biaya_sewa,
-        image: request.file.image
+        image: request.file.filename
     }
 
     modelMobil.create(newMobil)
-    .then(result => {
+     .then(result => {
         return response.json({
-            message: `Data mobil berhasil ditambahkan`
+             message: `Data mobil berhasil ditambahkan`
         })
-    })
-    .catch(error => {
-        return response.json({
-            message: error.message
-        })
-    })
+     })
+     .catch(error => {
+         return response.json({
+             message: error.message
+         })
+     })
 }
 
-exports.editDataMobil = (request, response) => {
+exports.editDataMobil = async (request, response) => {
     let id = request.params.id_mobil
     let dataMobil = {
         nomor_mobil: request.body.nomor_mobil,
@@ -52,7 +53,17 @@ exports.editDataMobil = (request, response) => {
         warna: request.body.warna,
         tahun_pembuatan: request.body.tahun_pembuatan,
         biaya_sewa: request.body.biaya_sewa,
-        image: request.file.image
+    }
+    if(request.file){
+        // jika edit menyertakan file gambar
+        let mobil = await modelMobil.findOne({where: {id_mobil: id}})
+        let oldFileName = mobil.image
+
+        let location = path.join(__dirname, "../image", oldFileName)
+        fs.unlink(location, error => console.log(error))
+
+        // menyisipkan nama file baru ke dalam objek dataSiswa
+        dataMobil.image = request.file.filename
     }
 
     modelMobil.update(dataMobil, {where:{id_mobil: id}})
@@ -77,7 +88,7 @@ exports.deleteDataMobil = async(request, response) => {
 
         // delete file
         let location = path.join(__dirname,"../image", oldFileName)
-        fs.unlink(location, error => log)
+        fs.unlink(location, console.log(error))
     }
 
     modelMobil.destroy({where: {id_mobil: id}})
