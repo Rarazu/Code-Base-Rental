@@ -15,10 +15,28 @@ exports.getDataKaryawan = (request, response) => {
     })
 }
 
+exports.findKaryawan = async (request, response) => {
+    let keyword = request.body.keyword
+
+    let sequelize = require(`sequelize`)
+    let Op = sequelize.Op
+
+    let dataKaryawan = await modelKaryawan.findAll({
+        where: {
+            [Op.or]: {
+                nama_karyawan: {[Op.like]: `%%${keyword}`},
+                alamat_karyawan: {[Op.like]: `%%${keyword}`},
+                username: {[Op.like]: `%%${keyword}`}
+            }
+        }
+    })
+    return response.json(dataKaryawan)
+}
+
 exports.addDataKaryawan = (request, response) => {
     let newKaryawan = {
         nama_karyawan: request.body.nama_karyawan,
-        alamat_karyawan: request.body.nama_karyawan,
+        alamat_karyawan: request.body.alamat_karyawan,
         kontak_karyawan: request.body.kontak_karyawan,
         username: request.body.username,
         password: md5(request.body.password)

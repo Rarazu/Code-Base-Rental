@@ -2,6 +2,8 @@ let modelMobil = require("../models/index").mobil
 let path = require("path")
 let fs = require("fs")
 const { error } = require("console")
+const { request } = require("http")
+const { response } = require("../routes/sewa")
 
 exports.getDataMobil = (request, response) => {
     modelMobil.findAll()
@@ -13,6 +15,24 @@ exports.getDataMobil = (request, response) => {
             message: error.message
         })
     })
+}
+
+exports.findMobil = async (request, response) => {
+    let keyword = request.body.keyword
+
+    let sequelize = require(`sequelize`)
+    let Op = sequelize.Op
+
+    let dataMobil = await modelMobil.findAll({
+        where: {
+            [Op.or]: {
+                merk: {[Op.like]: `%${keyword}%`},
+                jenis: {[Op.like]: `%${keyword}%`},
+                warna: {[Op.like]: `%${keyword}%`}
+            }
+        }
+    })
+    return response.json(dataMobil)
 }
 
 exports.addDataMobil = (request, response) => {
